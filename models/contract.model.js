@@ -11,17 +11,17 @@ const contractSchema = new mongoose.Schema({
         required: true
     },
     contractDate: {
-        type: Date, // Sanani formatlash
+        type: Date, 
         required: true
     },
     contractTurnOffDate: {
-        type: Date, // Sanani formatlash
+        type: Date, 
         required: true
     },
     contractSumma: {
         type: Number,
         required: true,
-        min: 0 // Contract summasi ijobiy bo'lishi kerak
+        min: 0 
     },
     content: {
         type: String,

@@ -25,7 +25,8 @@ const upload = multer({
 function checkFileType(file, cb) {
   const filetypes = /xlsx|xls|xlsm/;
   const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-  const mimetype = filetypes.test(file.mimetype)
+  const mimetype = file.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+                   file.mimetype === 'application/vnd.ms-excel';
 
   if (mimetype && extname) {
     return cb(null, true);

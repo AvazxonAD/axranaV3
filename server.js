@@ -9,6 +9,7 @@ const PORT = process.env.PORT || 3000;
 
 require('./config/db')();
 require('./utils/create.Admin')();
+require('./utils/boss.create')()
 
 app.use(express.json());
 app.use(express.urlencoded({extended: false}))
@@ -22,8 +23,55 @@ app.use('/otryad', require('./router/otryad.router'));
 app.use('/worker', require('./router/pasport.router'));
 app.use('/contract', require('./router/contract.router'))
 app.use("/result", require("./router/result.router"))
+app.use('/names', require('./router/boss.router'))
 
 app.use(require('./middleware/errorHandler'));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 app.listen(PORT, () => {
     console.log(`Server running on port: ${PORT}`.blue);

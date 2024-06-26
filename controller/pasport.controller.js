@@ -19,13 +19,13 @@ exports.create = asyncHandler(async (req, res, next) => {
         if (!worker.FIOlotin || !worker.FIOkril || !worker.selectRank || !worker.selectRankSumma || !worker.selectRegion || !worker.selectOtryad) {
             return next(new ErrorResponse('sorovlar bosh qolishi mumkin emas', 403))
         }
-        const test = await Pasport.findOne({parent: req.user.id, FIOkril: worker.FIOkril, FIOlotin: worker.FIOlotin})
-        if(test){
+        const test = await Pasport.findOne({ parent: req.user.id, FIOkril: worker.FIOkril, FIOlotin: worker.FIOlotin })
+        if (test) {
             return next(new ErrorResponse(`Bu xodim avval kiritilgan: ${test.FIOkril} ${test.FIOlotin}`, 403))
         }
     }
     const parent = await User.findById(req.user.id)
-    if(!parent){
+    if (!parent) {
         return next(new ErrorResponse("server xatolik user topilmadi", 500))
     }
     for (let worker of workers) {
@@ -57,13 +57,13 @@ exports.getAllworker = asyncHandler(async (req, res, next) => {
 // update worker 
 exports.updateWorker = asyncHandler(async (req, res, next) => {
     const { FIOlotin, FIOkril, selectRank, selectRankSumma, selectRegion, selectOtryad } = req.body
-    if (!FIOlotin || !FIOkril || !selectRank || !selectRankSumma || !selectRegion || !selectOtryad) {
+    if (!FIOlotin || !FIOkril || !selectRank || selectRankSumma === undefined || !selectRegion || !selectOtryad) {
         return next(new ErrorResponse('sorovlar bosh qolishi mumkin emas', 403))
     }
     const worker = await Pasport.findById(req.params.id)
-    if(worker.FIOlotin !== FIOlotin && worker.FIOkril !== FIOkril){
-        const test = await Pasport.findOne({parent: req.user.id,FIOkril, FIOlotin})
-        if(test){
+    if (worker.FIOlotin !== FIOlotin.trim()  && worker.FIOkril !== FIOkril.trim()) {
+        const test = await Pasport.findOne({ parent: req.user.id, FIOkril, FIOlotin })
+        if (test) {
             return next(new ErrorResponse(`Bu xodim avval kiritilgan: ${test.FIOkril} ${test.FIOlotin}`, 403))
         }
     }
@@ -92,9 +92,9 @@ exports.deleteWorker = asyncHandler(async (req, res, next) => {
 
 // for page 
 exports.forPage = asyncHandler(async (req, res, next) => {
-    const otryads = await Otryad.find({ parent: req.user.id })
-    const ranks = await Rank.find({ parent: req.user.id })
-    const locations = await Location.find({ parent: req.user.id })
+    const otryads = await Otryad.find({ parent: req.user.id }).sort({name: 1})
+    const ranks = await Rank.find({ parent: req.user.id }).sort({summa: -1})
+    const locations = await Location.find({ parent: req.user.id }).sort({name: 1})
     return res.status(200).json({
         success: true,
         otryads,
@@ -107,51 +107,57 @@ exports.forPage = asyncHandler(async (req, res, next) => {
 // Excel faylini o'qish uchun handler
 exports.createExcelData = asyncHandler(async (req, res, next) => {
     const filePath = path.resolve(__dirname, '..', req.file.path);
-    await fs.access(filePath); 
+    await fs.access(filePath);
 
     const workbook = xlsx.readFile(filePath);
-        const sheetName = workbook.SheetNames[0];
-        const sheet = workbook.Sheets[sheetName];
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
 
-        // Birinchi qatorni sarlavha sifatida olish
-        const jsonDataWithHeader = xlsx.utils.sheet_to_json(sheet, { header: 1 });
-        const headers = jsonDataWithHeader[0]; // Birinchi qator - sarlavhalar
-        const dataRows = jsonDataWithHeader.slice(1); // Keyingi qatorlar - ma'lumotlar
+    // Birinchi qatorni sarlavha sifatida olish
+    const jsonDataWithHeader = xlsx.utils.sheet_to_json(sheet, { header: 1 });
+    let headers = jsonDataWithHeader[0]; // Birinchi qator - sarlavhalar
+    const dataRows = jsonDataWithHeader.slice(1); // Keyingi qatorlar - ma'lumotlar
 
-        // Sarlavhalarni to'g'ri JavaScript obyektlariga o'zgartirish
-        const jsObjects = dataRows.map(row => {
-            let obj = {};
-            row.forEach((value, index) => {
-                obj[headers[index]] = value;
-            });
-            return obj;
+    // Sarlavhalarni to'g'ri JavaScript obyektlariga o'zgartirishdan oldin bo'sh joylardan tozalaymiz
+    headers = headers.map(header => header.trim());
+
+    const jsObjects = dataRows.map(row => {
+        let obj = {};
+        row.forEach((value, index) => {
+            obj[headers[index]] = value;
         });
-        for(let obj of jsObjects){
-            const test = await Pasport.findOne({parent: req.user.id,FIOkril: obj.FIOkril})
-            if(test){
-                return next(new ErrorResponse(`Bu xodim avval kiritilgan excel filedagi ushbu malumotni togirlab qaytadan uring: ${test.FIOkril}`, 403))
-            }
-            const test2 = await Pasport.findOne({parent: req.user.id, FIOlotin: obj.FIOlotin})
-            if(test2){
-                return next(new ErrorResponse(`Bu xodim avval kiritilgan excel filedagi ushbu malumotni togirlab qaytadan uring: ${test.FIOlotin}`, 403))
-            }
+        return obj;
+    });
+
+    console.log(jsObjects);
+
+    for (let obj of jsObjects) {
+        const test = await Pasport.findOne({ parent: req.user.id, FIOkril: obj.FIOkril })
+        if (test) {
+            return next(new ErrorResponse(`Bu xodim avval kiritilgan excel filedagi ushbu malumotni togirlab qaytadan uring: ${test.FIOkril}`, 403))
         }
-        for(let obj of jsObjects){
-            if(!obj.FIOlotin || !obj.FIOkril || !obj.unvon || !obj.summa || !obj.tuman || !obj.otryad){
-                return next(new ErrorResponse("sorovlar bosh qolgan excel fileni tekshiring", 403))
-            }
+        const test2 = await Pasport.findOne({ parent: req.user.id, FIOlotin: obj.FIOlotin })
+        if (test2) {
+            return next(new ErrorResponse(`Bu xodim avval kiritilgan excel filedagi ushbu malumotni togirlab qaytadan uring: ${test.FIOlotin}`, 403))
         }
-         for(let obj of jsObjects){
-            await Pasport.create({
-                FIOlotin: obj.FIOlotin,
-                FIOkril: obj.FIOkril,
-                selectRank: obj.unvon,
-                selectRankSumma: obj.summa,
-                selectRegion: obj.tuman,
-                selectOtryad: obj.otryad,
-                parent: req.user.id
-            })
+    }
+    for (let obj of jsObjects) {
+        console.log(obj)
+        if (!obj.FIOlotin || !obj.FIOkril || !obj.unvon || obj.summa === undefined || !obj.tuman || !obj.otryad) {
+            return next(new ErrorResponse("sorovlar bosh qolgan excel fileni tekshiring", 403))
         }
+    }
+    for (let obj of jsObjects) {
+        await Pasport.create({
+            FIOlotin: obj.FIOlotin,
+            FIOkril: obj.FIOkril,
+            selectRank: obj.unvon,
+            selectRankSumma: obj.summa,
+            selectRegion: obj.tuman,
+            selectOtryad: obj.otryad,
+            parent: req.user.id
+        })
+    }
     res.status(200).json({
         success: true,
         data: "Kiritildi"

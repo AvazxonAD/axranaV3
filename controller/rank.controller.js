@@ -33,7 +33,7 @@ exports.createRank = asyncHandler(async (req, res, next) => {
 
 // get all rank 
 exports.getAllRank =asyncHandler(async (req, res, next) => {
-    const ranks = await Rank.find({parent : req.user.id}).sort({name : 1})
+    const ranks = await Rank.find({parent : req.user.id}).sort({summa : -1})
     return res.status(200).json({success : true, data : ranks})
 
 })

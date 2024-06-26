@@ -3,7 +3,8 @@ const mongoose = require('mongoose')
 const otryadSchema = new  mongoose.Schema({
     name: {
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
     parent: {
         type: mongoose.Schema.Types.ObjectId,

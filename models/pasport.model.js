@@ -3,11 +3,13 @@ const mongoose = require('mongoose')
 const pasportSchema = new  mongoose.Schema({
     FIOlotin: {
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
     FIOkril: {
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
     selectRank: {
         type: String,
