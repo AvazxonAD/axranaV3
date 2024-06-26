@@ -13,7 +13,6 @@ exports.createWorker = asyncHandler(async (req, res, next) => {
     if(!req.user.admin){
         return next(new ErrorResponse('Siz uchun bu funksiya ruhsat berilmagan '))
     }
-    const parent = await User.findById(req.user.id)
 
     const {username, password} = req.body
     if(!username || !password){
@@ -42,7 +41,7 @@ exports.login = asyncHandler(async (req, res, next) => {
         return next(new ErrorResponse('Username yoki password hato kiritildi', 403))
     }
     if(user){
-        if(!user.password === password.trim()){
+         if(user.password !== password.trim()){
             return next(new ErrorResponse('Username yoki password hato kiritildi', 403))
         }
     }
@@ -53,17 +52,19 @@ exports.login = asyncHandler(async (req, res, next) => {
 // // update password 
 exports.update = asyncHandler(async (req, res, next) => {
     const {oldPassword, newPassword, username} = req.body
-    if(!oldPassword || !newPassword || !username){
+    if(!oldPassword || !newPassword){
         return next(new ErrorResponse('Sorovlar bosh qolmasligi kerak', 403))
     }
     const user = await User.findById(req.user.id)
     if(!user){
         return next(new ErrorResponse("server xatolik", 500))
     }
-    if(user.username !== username){
-        const test = await User.findOne({username: username.trim()})
-        if(test){
-            return next(new ErrorResponse(`Bu usernamega ega user bor iltimos boshqa nomdan foydalaning: ${test.username}`, 403))
+    if(username){
+        if(user.username !== username){
+            const test = await User.findOne({username: username.trim()})
+            if(test){
+                return next(new ErrorResponse(`Bu usernamega ega user bor iltimos boshqa nomdan foydalaning: ${test.username}`, 403))
+            }
         }
     }
     if(user.password !== oldPassword){
@@ -73,7 +74,7 @@ exports.update = asyncHandler(async (req, res, next) => {
     //     return next(new ErrorResponse('Yangi password belgilar soni 6 tadan kam bolmasligi kerak',403))
     // }
     user.password = newPassword
-    user.username = username
+    user.username = username ? username : user.username
     await user.save()
     return res.status(200).json({success : true, data : user})
 })
