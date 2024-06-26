@@ -10,8 +10,9 @@ exports.create = asyncHandler(async (req, res, next) => {
         return next(new ErrorResponse('sorovlar bosh qolishi mumkin emas', 403))
     }
     if (req.query.query === 'ru') {
+        console.log(req.body)
         for (let worker of workers) {
-            const workerName = await Worker.findOne({ FIOkril: worker.worker })
+            const workerName = await Worker.findOne({ FIOkril: worker.worker})
             if(!workerName){
                 return next(new ErrorResponse("server xatolik xodim topilmadi", 403))
             }

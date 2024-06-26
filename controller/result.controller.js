@@ -119,19 +119,19 @@ exports.excelCreate = asyncHandler(async (req, res) => {
     const worksheet = xlsx.utils.json_to_sheet(data);
 
     worksheet['!cols'] = [
-        { wch: 25 }, // FIO
-        { wch: 20 }, // unvon
+        { wch: 40 }, // FIO
+        { wch: 30 }, // unvon
         { wch: 20 }, // tuman
         { wch: 20 }, // otryad
         { wch: 20 }, // shartnoma_N
         { wch: 25 }, // shartnoma_sanasi
         { wch: 20 }, // shartnoma_summasi
-        { wch: 45 }, // shartnoma_mazmuni
+        { wch: 50 }, // shartnoma_mazmuni
         { wch: 20 }, // xizmat_muddati
         { wch: 25 }, // korxona_nomi
         { wch: 20 }, // inn
         { wch: 35 }, // manzil
-        { wch: 25 }, // raxbar
+        { wch: 40 }, // raxbar
         { wch: 20 }  // telefon
     ];
 
