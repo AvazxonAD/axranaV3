@@ -51,12 +51,12 @@ exports.updateRank = asyncHandler(async (req, res, next) => {
     if(!name, summa === null){
         return next(new ErrorResponse('sorovlar bosh qolishi mumkin emas', 403))
     }
-    const test = await Rank.findOne({name: req.body.name, parent: req.user.id})
+    const test = await Bank.findOne({name: req.body.name, parent: req.user.id})
     if(test){
         return next(new ErrorResponse(`Bu unvon nomi kiritilgan boshqa nomga ozgartring : ${test.name}`))
     }
 
-    await Rank.findByIdAndUpdate(req.params.id, {
+    await Bank.findByIdAndUpdate(req.params.id, {
         name: name,
         summa: summa
     }, {new : true})

@@ -129,7 +129,6 @@ exports.createExcelData = asyncHandler(async (req, res, next) => {
         return obj;
     });
 
-    console.log(jsObjects);
 
     for (let obj of jsObjects) {
         const test = await Pasport.findOne({ parent: req.user.id, FIOkril: obj.FIOkril })
@@ -142,7 +141,6 @@ exports.createExcelData = asyncHandler(async (req, res, next) => {
         }
     }
     for (let obj of jsObjects) {
-        console.log(obj)
         if (!obj.FIOlotin || !obj.FIOkril || !obj.unvon || obj.summa === undefined || !obj.tuman || !obj.otryad) {
             return next(new ErrorResponse("sorovlar bosh qolgan excel fileni tekshiring", 403))
         }
@@ -158,7 +156,7 @@ exports.createExcelData = asyncHandler(async (req, res, next) => {
             parent: req.user.id
         })
     }
-    res.status(200).json({
+    return res.status(200).json({
         success: true,
         data: "Kiritildi"
     });

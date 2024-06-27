@@ -24,6 +24,7 @@ app.use('/worker', require('./router/pasport.router'));
 app.use('/contract', require('./router/contract.router'))
 app.use("/result", require("./router/result.router"))
 app.use('/names', require('./router/boss.router'))
+app.use('/bank', require('./router/bank.router'))
 
 app.use(require('./middleware/errorHandler'));
 
