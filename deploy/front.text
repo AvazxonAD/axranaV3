@@ -5,5 +5,8 @@ services
 world wide web publishing services
 stop 
 strat 
+appwix.cpl : 
 npm i 
 npm run build 
+iis add website 
+ 
