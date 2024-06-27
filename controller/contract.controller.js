@@ -193,3 +193,8 @@ exports.forPage = asyncHandler(async (req, res, next) => {
         data: workers
     })
 })
+
+// get korxona 
+exports.getKorxona = asyncHandler(async (req, res, next) => {
+    
+})
