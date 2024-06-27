@@ -138,3 +138,19 @@ exports.deleteBank = asyncHandler(async (req, res, next) => {
         data: "Delete"
     })
 })
+
+// search bank 
+exports.search = asyncHandler(async (req, res, next) => {
+    const {number} = req.body
+    if(!number){
+        return next(new ErrorResponse("sorov bosh qolmasin", 403))
+    }
+    const bank = await Bank.findOne({parent: req.user.id, number})
+    if(!bank){
+        return next(new ErrorResponse("Bank topilmadi", 404))
+    }
+    return res.status(200).json({
+        success: true, 
+        data: bank
+    })
+})
