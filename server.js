@@ -5,7 +5,7 @@ const app = express();
 require('dotenv').config();
 require('colors');
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 require('./config/db')();
 require('./utils/create.Admin')();

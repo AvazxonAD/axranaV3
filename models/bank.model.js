@@ -1,6 +1,6 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
-const bankSchema = new  mongoose.Schema({
+const bankSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
@@ -14,6 +14,6 @@ const bankSchema = new  mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     }
-}, {timestamps: true })
+}, { timestamps: true });
 
-module.exports = mongoose.model("Bank", bankSchema)
+module.exports = mongoose.model("Bank", bankSchema);

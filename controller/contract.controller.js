@@ -2,6 +2,7 @@ const asyncHandler = require('../middleware/asyncHandler')
 const ErrorResponse = require('../utils/errorResponse')
 const Contract = require('../models/contract.model')
 const Worker = require('../models/pasport.model')
+const Korxona = require('../models/korxona.model')
 
 // create conract 
 exports.create = asyncHandler(async (req, res, next) => {
@@ -52,6 +53,16 @@ exports.create = asyncHandler(async (req, res, next) => {
         parent: req.user.id,
         boss
     })
+    const korxona = await Korxona.findOne({inn: inn, parent: req.user.id})
+    if(!korxona){
+        await Korxona.create({
+            name,
+            inn,
+            address,
+            accountNumber,
+            parent: req.user.id
+        })
+    }
     return res.status(200).json({
         success: true,
         data: newContract
@@ -94,6 +105,10 @@ exports.getAllContract = asyncHandler(async (req, res, next) => {
 
 // update contract
 exports.update = asyncHandler(async (req, res, next) => {
+    const contract = await Contract.findById(req.params.id)
+    if(!contract){
+        return next(new ErrorResponse("shartnoma topilmadi server xatolik", 403))
+    }
     const { contractDate, contractTurnOffDate, contractSumma, content, name, inn, address, accountNumber, bankName, workers, contractNumber, phone } = req.body
     if (!contractDate || !contractTurnOffDate || !contractSumma || !content || !name || !inn || !address || !accountNumber || !bankName || !workers || workers.length < 1 || !contractNumber || !phone) {
         return next(new ErrorResponse('sorovlar bosh qolishi mumkin emas', 403))
@@ -143,6 +158,10 @@ exports.update = asyncHandler(async (req, res, next) => {
         contractNumber,
         phone
     }, { new: true })
+    const korxona = await Korxona.findOne({inn: contract.inn, parent: req.user.id})
+    if(korxona){
+        await Korxona.findByIdAndUpdate(korxona._id, {inn: updateContract.inn}, {new: true})
+    }
     return res.status(200).json({
         success: true,
         data: updateContract

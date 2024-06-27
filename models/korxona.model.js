@@ -1,12 +1,20 @@
 const mongoose = require('mongoose')
 
 const korxonaSchema = new  mongoose.Schema({
+    inn: {
+        type: Number,
+        required: true
+    },
     name: {
         type: String,
         required: true,
         trim: true
     },
-    number: {
+    adress: {
+        type: String,
+        required: true
+    },
+    accountNumber: {
         type: Number,
         required: true
     },
@@ -16,4 +24,4 @@ const korxonaSchema = new  mongoose.Schema({
     }
 }, {timestamps: true })
 
-module.exports = mongoose.model("Bank", bankSchema)
+module.exports = mongoose.model("Korxona", korxonaSchema)
