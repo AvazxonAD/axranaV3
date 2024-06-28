@@ -56,7 +56,7 @@ exports.updateRank = asyncHandler(async (req, res, next) => {
         return next(new ErrorResponse(`Bu unvon nomi kiritilgan boshqa nomga ozgartring : ${test.name}`))
     }
 
-    await Bank.findByIdAndUpdate(req.params.id, {
+    await Rank.findByIdAndUpdate(req.params.id, {
         name: name,
         summa: summa
     }, {new : true})
