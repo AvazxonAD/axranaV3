@@ -53,16 +53,6 @@ exports.create = asyncHandler(async (req, res, next) => {
         parent: req.user.id,
         boss
     })
-    const korxona = await Korxona.findOne({inn: inn, parent: req.user.id})
-    if(!korxona){
-        await Korxona.create({
-            name,
-            inn,
-            address,
-            accountNumber,
-            parent: req.user.id
-        })
-    }
     return res.status(200).json({
         success: true,
         data: newContract
